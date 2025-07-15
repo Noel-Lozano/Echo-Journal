@@ -1,0 +1,6 @@
+requests 
+flask 
+flask-sqlalchemy
+flask-dance
+oauthlib
+python-dotenv
