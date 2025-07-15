@@ -4,3 +4,4 @@ flask-sqlalchemy
 flask-dance
 oauthlib
 python-dotenv
+google-generativeai
