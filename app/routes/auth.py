@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, url_for, session
 from flask_dance.contrib.google import google
-from app.models import db, User
+from app.models.users import db, User
 
 auth_bp = Blueprint('auth', __name__)
 
