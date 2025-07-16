@@ -24,3 +24,4 @@ def fetch_product_by_barcode(barcode):
             "error": f"API error: {str(e)}"
         }
 
+
