@@ -1,30 +1,34 @@
-from flask import Blueprint, redirect, url_for, session
-from flask_dance.contrib.google import google
+from flask import Blueprint, request, session, redirect
 from app.models.users import db, User
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route('/')
-def home():
-    return '<a href="/login/google">Login with Google</a>'
+@auth_bp.route("/", methods=["GET"])
+def login_form():
+    return """
+        <form action="/login" method="post">
+            <input name="username" placeholder="username" required><br>
+            <input name="password" placeholder="password" type="password" required><br>
+            <button type="submit">Login / Signup</button>
+        </form>
+    """
 
-@auth_bp.route('/login/google/authorized')
-def google_login():
-    resp = google.get("/oauth2/v2/userinfo")
-    if not resp.ok:
-        return "Failed to fetch user info from Google", 400
+@auth_bp.route("/login", methods=["POST"])
+def login():
+    username = request.form["username"]
+    password = request.form["password"]
 
-    info = resp.json()
-    google_id = info["id"]
-    email = info["email"]
-    name = info.get("name")
-
-    # Check if user exists
-    user = User.query.filter_by(google_id=google_id).first()
+    user = User.query.filter_by(username=username).first()
     if not user:
-        user = User(google_id=google_id, email=email, name=name)
+        user = User(username=username)
+        user.set_password(password)
         db.session.add(user)
         db.session.commit()
+        session["user_id"] = user.id
+        return f"Welcome, {username}! Account created with user_id={user.id}"
+
+    if not user.check_password(password):
+        return "❌ Wrong password!"
 
     session["user_id"] = user.id
-    return f"Welcome, {user.name or user.email}!"
+    return f"✅ Logged in as {username} (user_id={user.id})"
