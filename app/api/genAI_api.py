@@ -1,48 +1,49 @@
 import os
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 GENAI_API_KEY = os.getenv("GENAI_API_KEY")
 if not GENAI_API_KEY:
     raise ValueError("GENAI_API_KEY is not set in the environment variables.")
 
-genai.configure(api_key=GENAI_API_KEY)
+client = genai.Client(api_key=GENAI_API_KEY)
+
+system_message = types.GenerateContentConfig(system_instruction="You are a helpful nutrition and sustainability assistant.")
 
 def build_prompt(product):
-    """
-    Build the prompt for the Generative AI model for evaluating a food product.
-
-    Args:
-        product (dict): The product data containing details like name, brands, ingredients, etc.
-
-    Returns:
-        str: The constructed prompt for the Generative AI model.
-    """
     return f"""
-    You are a helpful nutrition and sustainability assistant.
+    Here is data about the user:
 
-    Analyze the following food product and provide a detailed evaluation:
-    - Name: {product.get("name", "Unknown")}
-    - Brand: {product.get("brands", "Unknown")}
-    - Nutrition Score: {product.get("nutriscore_grade", "Unknown")}
-    - Eco Score: {product.get("ecoscore_grade", "Unknown")}
-    - Ingredients: {product.get("ingredients_text", "Not provided")}
+    What follows is a dump of a food product's data from Open Food Facts.
+    It contains information about the product's ingredients, nutritional values, and environmental impact.
 
-    Generate the following:
-    1. A list of **pros** of consuming this product (health and environmental benefits).
-    2. A list of **cons** or concerns (e.g., unhealthy ingredients, environmental impact, allergens, poor sustainability).
-    3. An **overall evaluation** or score (A-F) with a one-sentence reason.
+    Generate a response with the following structure:
+    1. The first line is a score (A-F) based on the product's healthiness for the user specifically.
+    2. The second line is a sentence about the pros of the product. No prefix, just the sentence.
+    3. The third line is a sentence about the cons of the product. No prefix, just the sentence.
+    Both lines should be concise and informative. Leave the line blank if there is no information to provide, but always contain three lines.
 
-    Keep the tone informative and format clearly with bullet points for pros and cons.
+    {product.get("product", {})}
     """
 
 def generate_evaluation(product):
-    """ generate an evaluation for a food product using Generative AI """
     prompt = build_prompt(product)
+    if not product.get("success", False):
+        return f"Error fetching product: {product.get('error', 'Unknown error')}"
 
     try:
-        model = genai.Model("gemini-1.5-flash")
-        response = model.generate_content(prompt)
-        return response.text 
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-lite",
+            config=system_message,
+            contents=prompt,
+        )
+        lines = response.text.splitlines()
+        return {
+            "eco_score": product.get("product", {}).get("ecoscore_score", "N/A"),
+            "score": lines[0].strip(),
+            "pros": lines[1].strip(),
+            "cons": lines[2].strip()
+        }
     
     except Exception as e:
         return f"Error generating evaluation: {str(e)}"
