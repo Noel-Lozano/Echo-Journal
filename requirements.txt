@@ -5,3 +5,4 @@ flask-dance
 oauthlib
 python-dotenv
 google-genai
+google 
