@@ -8,23 +8,25 @@ if not GENAI_API_KEY:
 
 client = genai.Client(api_key=GENAI_API_KEY)
 
-system_message = types.GenerateContentConfig(system_instruction="You are a helpful nutrition and sustainability assistant.")
+system_message = types.GenerateContentConfig(system_instruction="You are an evaluator for food product health and sustainability.")
 
 def build_prompt(product):
     return f"""
-    Here is data about the user:
+    You are an evaluator for food product health and sustainability.
 
-    What follows is a dump of a food product's data from Open Food Facts.
-    It contains information about the product's ingredients, nutritional values, and environmental impact.
-
-    Generate a response with the following structure:
-    1. The first line is a score (A-F) based on the product's healthiness for the user specifically.
-    2. The second line is a sentence about the pros of the product. No prefix, just the sentence.
-    3. The third line is a sentence about the cons of the product. No prefix, just the sentence.
-    Both lines should be concise and informative. Leave the line blank if there is no information to provide, but always contain three lines.
+    Below is a JSON dump from Open Food Facts, containing data on ingredients, nutrition, and environmental impact:
 
     {product.get("product", {})}
+
+    Your task is to output **exactly three lines**, formatted as follows:
+
+    1. A single letter (A–F) that represents the product's overall healthiness for the average consumer.
+    2. One concise sentence stating the pros of the product. No prefixes or labels.
+    3. One concise sentence stating the cons of the product. No prefixes or labels.
+
+    If there is no meaningful pro or con, leave the line empty — but always output three lines only. Do not add any commentary or explanation before or after.
     """
+
 
 def generate_evaluation(product):
     prompt = build_prompt(product)
@@ -38,7 +40,9 @@ def generate_evaluation(product):
             contents=prompt,
         )
         lines = response.text.splitlines()
+        print(f"Generated response: {lines}")
         return {
+            "product_name": product.get("product", {}).get("product_name", "Unknown"),
             "eco_score": product.get("product", {}).get("ecoscore_score", "N/A"),
             "score": lines[0].strip(),
             "pros": lines[1].strip(),
