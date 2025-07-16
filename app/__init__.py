@@ -17,6 +17,9 @@ def create_app():
     from .routes.auth import auth_bp
     app.register_blueprint(auth_bp)
 
+    from .routes.search import search_bp
+    app.register_blueprint(search_bp)
+
     with app.app_context():
         db.create_all()
 
