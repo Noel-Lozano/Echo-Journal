@@ -28,7 +28,7 @@ def login():
         return f"Welcome, {username}! Account created with user_id={user.id}"
 
     if not user.check_password(password):
-        return "❌ Wrong password!"
+        return "Wrong password!"
 
     session["user_id"] = user.id
-    return f"✅ Logged in as {username} (user_id={user.id})"
+    return f"Logged in as {username} (user_id={user.id})"
