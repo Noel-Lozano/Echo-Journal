@@ -5,6 +5,8 @@ from flask_dance.contrib.google import make_google_blueprint, google
 from dotenv import load_dotenv
 
 load_dotenv()
+print("Client ID:", os.getenv("GOOGLE_OAUTH_CLIENT_ID"))
+
 
 db = SQLAlchemy()
 
