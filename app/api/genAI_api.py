@@ -8,41 +8,39 @@ if not GENAI_API_KEY:
 genai.configure(api_key=GENAI_API_KEY)
 
 def build_prompt(product):
-    """
-    Build the prompt for the Generative AI model for evaluating a food product.
-
-    Args:
-        product (dict): The product data containing details like name, brands, ingredients, etc.
-
-    Returns:
-        str: The constructed prompt for the Generative AI model.
-    """
     return f"""
     You are a helpful nutrition and sustainability assistant.
 
-    Analyze the following food product and provide a detailed evaluation:
-    - Name: {product.get("name", "Unknown")}
-    - Brand: {product.get("brands", "Unknown")}
-    - Nutrition Score: {product.get("nutriscore_grade", "Unknown")}
-    - Eco Score: {product.get("ecoscore_grade", "Unknown")}
-    - Ingredients: {product.get("ingredients_text", "Not provided")}
+    Here is data about the user:
 
-    Generate the following:
-    1. A list of **pros** of consuming this product (health and environmental benefits).
-    2. A list of **cons** or concerns (e.g., unhealthy ingredients, environmental impact, allergens, poor sustainability).
-    3. An **overall evaluation** or score (A-F) with a one-sentence reason.
+    What follows is a dump of a food product's data from Open Food Facts.
+    It contains information about the product's ingredients, nutritional values, and environmental impact.
 
-    Keep the tone informative and format clearly with bullet points for pros and cons.
+    Generate a response with the following structure:
+    1. The first line is a score (A-F) based on the product's healthiness for the user specifically.
+    2. The next six lines are pros and cons of the product:
+       - Pros: List the top 3 positive aspects of the product.
+       - Cons: List the top 3 negative aspects of the product.
+    3. If you have less than 3 pros or cons, leave those lines blank. However there should always be 6 lines after the score.
+
+    {product.get("product", {})}
     """
 
 def generate_evaluation(product):
-    """ generate an evaluation for a food product using Generative AI """
     prompt = build_prompt(product)
+    if not product.get("success", False):
+        return f"Error fetching product: {product.get('error', 'Unknown error')}"
 
     try:
-        model = genai.Model("gemini-1.5-flash")
+        model = genai.Model("gemini-2.0-flash-lite")
         response = model.generate_content(prompt)
-        return response.text 
+        lines = response.text.splitlines()
+        return {
+            "eco_score": product.get("product", {}).get("ecoscore_score", "N/A"),
+            "score": lines[0].strip(),
+            "pros": [line.strip() for line in lines[1:4]],
+            "cons": [line.strip() for line in lines[4:7]]
+        }
     
     except Exception as e:
         return f"Error generating evaluation: {str(e)}"

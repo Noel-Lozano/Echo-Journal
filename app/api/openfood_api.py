@@ -3,7 +3,7 @@ import requests
 OPENFOODFACTS_BASE_URL = "https://world.openfoodfacts.org/api/v2/product/"
 
 def fetch_product_by_barcode(barcode):
-    url = f"{OPENFOODFACTS_BASE_URL}{barcode}.json"
+    url = f"{OPENFOODFACTS_BASE_URL}{barcode}"
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -23,5 +23,4 @@ def fetch_product_by_barcode(barcode):
             "success": False,
             "error": f"API error: {str(e)}"
         }
-
 
