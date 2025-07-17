@@ -23,6 +23,9 @@ def create_app():
     from .routes.pantry_display import pantry_bp
     app.register_blueprint(pantry_bp)
 
+    from .routes.profile import profile_bp
+    app.register_blueprint(profile_bp)
+
     with app.app_context():
         db.create_all()
     
