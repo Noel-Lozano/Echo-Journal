@@ -42,8 +42,15 @@ def signup():
     session["user_id"] = user.id
     return redirect("/dashboard")
 
-@auth_bp.route("/dashboard", methods=["GET"])
+@auth_bp.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
         return redirect("/login")
-    return render_template("dashboard.html")
+    
+    user = User.query.get(session["user_id"])
+    return render_template("dashboard.html", username=user.username)
+
+@auth_bp.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return redirect("/")
