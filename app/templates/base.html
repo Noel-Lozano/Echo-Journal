@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}EcoLens{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='output.css') }}">
+    <script src="https://kit.fontawesome.com/f39da3ee17.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="w-full bg-white shadow">
+        <div class="max-w-[1200px] mx-auto px-4">
+            {% include "navbar.html" %}
+        </div>
+    </div>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    {% include "footer.html" %}
+</body>
+</html>
