@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Pantry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='output.css') }}">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <div class="w-full max-w-6xl mx-auto py-12 px-4">
+        <h1 class="text-4xl font-bold text-center mb-10">Your Pantry</h1>
+
+        <!-- Center the table horizontally -->
+        <div class="flex justify-center">
+            <div class="overflow-x-auto rounded-lg shadow-lg bg-white border border-gray-300 w-full max-w-4xl">
+                <table class="min-w-full text-sm mx-auto">
+                    <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                        <tr>
+                            <th class="px-5 py-3 text-center">Product Name</th>
+                            <th class="px-5 py-3 text-center">Eco Score</th>
+                            <th class="px-5 py-3 text-center">Score</th>
+                            <th class="px-5 py-3 text-center">Pros</th>
+                            <th class="px-5 py-3 text-center">Cons</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in pantry_items %}
+                        <tr class="border-t border-gray-200 hover:bg-gray-50">
+                            <td class="px-5 py-3 text-center">{{ item.product_name }}</td>
+                            <td class="px-5 py-3 text-center font-semibold text-green-600">{{ item.eco_score }}</td>
+                            <td class="px-5 py-3 text-center font-semibold">{{ item.score }}</td>
+                            <td class="px-5 py-3 text-center">{{ item.pros }}</td>
+                            <td class="px-5 py-3 text-center">{{ item.cons }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-8 text-gray-500">No pantry items found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
