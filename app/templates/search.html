@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+  <title>Barcode Search</title>
+  <script src="https://unpkg.com/@ericblade/quagga2@1.2.6/dist/quagga.min.js"></script>
+  <style>
+    #scanner-container {
+      width: 200px;
+      height: 200px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h2>Barcode Search</h2>
+  <div id="scanner-container"></div>
+  <button onclick="enableScanning = true;">Start Scan</button>
+
+  {% if result %}
+    <h3>Result</h3>
+    <ul>
+      <li><strong>Product Name:</strong> {{ result.product_name }}</li>
+      <li><strong>Eco Score:</strong> {{ result.eco_score }}</li>
+      <li><strong>Health Score:</strong> {{ result.health_score }}</li>
+      <li><strong>Pros:</strong> {{ result.pros }}</li>
+      <li><strong>Cons:</strong> {{ result.cons }}</li>
+    </ul>
+    <form method="POST" action="/search/add-to-pantry">
+      <input type="hidden" name="product_name" value="{{ result.product_name }}">
+      <input type="hidden" name="eco_score" value="{{ result.eco_score }}">
+      <input type="hidden" name="health_score" value="{{ result.health_score }}">
+      <input type="hidden" name="pros" value="{{ result.pros }}">
+      <input type="hidden" name="cons" value="{{ result.cons }}">
+      <button type="submit">Add to Pantry</button>
+    </form>
+  {% elif error %}
+    <p style="color: red;">{{ error }}</p>
+  {% endif %}
+
+  <script>
+    let enableScanning = false;
+
+    Quagga.init({
+      inputStream: {
+        type: "LiveStream",
+        target: document.getElementById("scanner-container"),
+        constraints: {
+          facingMode: "environment"
+        }
+      },
+      decoder: {
+        readers: ["ean_reader", "upc_reader"]
+      }
+    }, err => {
+      if (!err) Quagga.start();
+    });
+
+    Quagga.onDetected(data => {
+      if (!enableScanning) return;
+      enableScanning = false;
+
+      const barcode = data.codeResult.code;
+      fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}`)
+        .then(res => res.json())
+        .then(json => {
+          const name = json?.product?.product_name || "Unknown";
+          if (confirm(`Is this it?\n\n"${name}"`)) {
+            window.location.href = `/search?barcode=${barcode}`;
+          }
+        })
+        .catch(e => {
+          console.log("Fetch failed", e);
+          enableScanning = true; // Let them try again
+        });
+    });
+  </script>
+</body>
+</html>

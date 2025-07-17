@@ -1,41 +1,10 @@
-from flask import Blueprint, request, render_template_string, session, redirect, url_for
+from flask import Blueprint, request, render_template, session, redirect, url_for
 from app.api.openfood_api import fetch_product_by_barcode
 from app.api.genAI_api import generate_evaluation
 from app.models.pantry import Pantry
 from app import db
 
 search_bp = Blueprint("search", __name__)
-
-HTML_TEMPLATE = """
-<!doctype html>
-<title>Product Evaluation</title>
-<h2>Barcode Search</h2>
-<form method="GET" action="/search">
-    <input type="text" name="barcode" placeholder="Enter barcode" required>
-    <button type="submit">Submit</button>
-</form>
-
-{% if result %}
-    <h3>Result</h3>
-    <ul>
-        <li><strong>Product Name:</strong> {{ result.product_name }}</li>
-        <li><strong>Eco Score:</strong> {{ result.eco_score }}</li>
-        <li><strong>Health Score:</strong> {{ result.health_score }}</li>
-        <li><strong>Pros:</strong> {{ result.pros }}</li>
-        <li><strong>Cons:</strong> {{ result.cons }}</li>
-    </ul>
-    <form method="POST" action="/search/add-to-pantry">
-        <input type="hidden" name="product_name" value="{{ result.product_name }}">
-        <input type="hidden" name="eco_score" value="{{ result.eco_score }}">
-        <input type="hidden" name="health_score" value="{{ result.health_score }}">
-        <input type="hidden" name="pros" value="{{ result.pros }}">
-        <input type="hidden" name="cons" value="{{ result.cons }}">
-        <button type="submit">Add to Pantry</button>
-    </form>
-{% elif error %}
-    <p style="color: red;">{{ error }}</p>
-{% endif %}
-"""
 
 @search_bp.route("/search", methods=["GET"])
 def search():
@@ -49,7 +18,7 @@ def search():
         except Exception as e:
             error = f"Error: {str(e)}"
 
-    return render_template_string(HTML_TEMPLATE, result=result, error=error)
+    return render_template("search.html", result=result, error=error)
 
 @search_bp.route("/search/add-to-pantry", methods=["POST"])
 def add_to_pantry():

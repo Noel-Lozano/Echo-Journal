@@ -30,8 +30,8 @@ def build_prompt(product, user_id=None):
 
     Your task is to output **exactly three lines**, without lines in between, formatted as follows:
 
-    1. One line containing at most a few detailed but concise sentences, stating the pros of the product for the user given the profile text. Mention what parts are relevant to the user and why they are beneficial.
-    2. One line containing at most a few detailed but concise sentences, stating the cons of the product for the user given the profile text. Mention what parts are relevant to the user and why they are detrimental.
+    1. One line containing at most a few detailed but concise sentences, stating the pros of the product for the user given the profile text. Mention what parts are relevant to the user and why they are beneficial. Do not include any prefix like "Pros:".
+    2. One line containing at most a few detailed but concise sentences, stating the cons of the product for the user given the profile text. Mention what parts are relevant to the user and why they are detrimental. Do not include any prefix like "Cons:".
     3. A single number (0-100) that represents the product's overall healthiness for the user, given the profile text.
 
     If there is no meaningful pro or con, leave the line empty — but always output three lines only, without lines in between. Do not add any commentary or explanation before or after.
@@ -45,12 +45,12 @@ def generate_evaluation(product, user_id=None):
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash-lite",
+            model="gemini-2.0-flash",
             config=system_message,
             contents=prompt,
         )
         lines = response.text.splitlines()
-        print(f"Generated response: {response.text}")
+
         return {
             "product_name": product.get("product", {}).get("product_name", "Unknown"),
             "eco_score": product.get("product", {}).get("ecoscore_score", "N/A"),
