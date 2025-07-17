@@ -47,7 +47,7 @@ def dashboard():
     if "user_id" not in session:
         return redirect("/login")
     
-    user = User.query.get(session["user_id"])
+    user = db.session.get(User, session["user_id"])
     return render_template("dashboard.html", username=user.username)
 
 @auth_bp.route("/logout", methods=["POST"])
