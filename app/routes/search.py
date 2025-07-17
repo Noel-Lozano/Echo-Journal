@@ -20,14 +20,14 @@ HTML_TEMPLATE = """
     <ul>
         <li><strong>Product Name:</strong> {{ result.product_name }}</li>
         <li><strong>Eco Score:</strong> {{ result.eco_score }}</li>
-        <li><strong>Score:</strong> {{ result.score }}</li>
+        <li><strong>Health Score:</strong> {{ result.health_score }}</li>
         <li><strong>Pros:</strong> {{ result.pros }}</li>
         <li><strong>Cons:</strong> {{ result.cons }}</li>
     </ul>
     <form method="POST" action="/search/add-to-pantry">
         <input type="hidden" name="product_name" value="{{ result.product_name }}">
         <input type="hidden" name="eco_score" value="{{ result.eco_score }}">
-        <input type="hidden" name="score" value="{{ result.score }}">
+        <input type="hidden" name="health_score" value="{{ result.health_score }}">
         <input type="hidden" name="pros" value="{{ result.pros }}">
         <input type="hidden" name="cons" value="{{ result.cons }}">
         <button type="submit">Add to Pantry</button>
@@ -45,7 +45,7 @@ def search():
     if barcode:
         try:
             product = fetch_product_by_barcode(barcode)
-            result = generate_evaluation(product)
+            result = generate_evaluation(product, session.get("user_id"))
         except Exception as e:
             error = f"Error: {str(e)}"
 
@@ -60,7 +60,7 @@ def add_to_pantry():
         user_id=session["user_id"],
         product_name=request.form.get("product_name"),
         eco_score=request.form.get("eco_score"),
-        score=request.form.get("score"),
+        score=request.form.get("health_score"),
         pros=request.form.get("pros"),
         cons=request.form.get("cons")
     )
