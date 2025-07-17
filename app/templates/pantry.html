@@ -27,7 +27,7 @@
 
         <!-- Recommendations Section -->
         {% if recommendations %}
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 border border-gray-200">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 border border-gray-200 max-w-2xl mx-auto">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-semibold text-green-600">Healthier Recommendations</h2>
                 <button id="refreshRecommendations" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition text-sm">
@@ -36,19 +36,19 @@
             </div>
             
             <div id="recommendationsContent" class="prose max-w-none">
-                <div class="whitespace-pre-line text-gray-700">{{ recommendations }}</div>
+                <div class="text-gray-700 whitespace-pre-wrap">{{ recommendations }}</div>
             </div>
         </div>
         {% endif %}
 
         <!-- Toggle Buttons -->
-        <div class="flex justify-center mb-8">
-            <div class="flex space-x-2 bg-gray-200 rounded-lg p-1">
-                <button id="ecoBtn" class="px-6 py-2 rounded-md font-medium transition-all duration-200 bg-green-600 text-white">
+        <div class="flex justify-center my-6"> <!-- Adds vertical space -->
+            <div class="flex space-x-2 bg-gray-200 rounded-lg px-2 py-2"> <!-- Horizontal/vertical padding around buttons -->
+                <button id="ecoBtn" class="px-5 py-2 rounded-md font-medium transition-all duration-200 bg-green-600 text-white">
                     Eco Score
                 </button>
-                <button id="gradeBtn" class="px-6 py-2 rounded-md font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100">
-                    Grade Score
+                <button id="gradeBtn" class="px-5 py-2 rounded-md font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100">
+                    Health Score
                 </button>
             </div>
         </div>
@@ -63,7 +63,7 @@
                             <tr>
                                 <th class="px-5 py-3 text-center">Product Name</th>
                                 <th class="px-5 py-3 text-center">Eco Score</th>
-                                <th class="px-5 py-3 text-center">Score</th>
+                                <th class="px-5 py-3 text-center">Health Score</th>
                                 <th class="px-5 py-3 text-center">Pros</th>
                                 <th class="px-5 py-3 text-center">Cons</th>
                             </tr>
@@ -98,7 +98,7 @@
                             <tr>
                                 <th class="px-5 py-3 text-center">Product Name</th>
                                 <th class="px-5 py-3 text-center">Eco Score</th>
-                                <th class="px-5 py-3 text-center">Score</th>
+                                <th class="px-5 py-3 text-center">Health Score</th>
                                 <th class="px-5 py-3 text-center">Pros</th>
                                 <th class="px-5 py-3 text-center">Cons</th>
                             </tr>
@@ -169,7 +169,11 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.recommendations) {
-                            recommendationsContent.innerHTML = `<div class="whitespace-pre-line text-gray-700">${data.recommendations}</div>`;
+                            let formatted = data.recommendations
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // bold
+                                .trim()                                           // removes leading/trailing spaces and newlines
+                                .replace(/\n/g, '<br>');                          // newlines to <br>
+                            recommendationsContent.innerHTML = `<div class="text-gray-700">${formatted}</div>`;
                         } else {
                             alert('Failed to generate recommendations');
                         }
