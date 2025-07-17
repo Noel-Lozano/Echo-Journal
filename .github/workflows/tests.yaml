@@ -20,4 +20,9 @@ jobs:
           pip install pytest
 
       - name: Run tests
+        env:
+          FLASK_APP_SECRET_KEY: john
+          GOOGLE_OAUTH_CLIENT_ID: fake
+          GOOGLE_OAUTH_CLIENT_SECRET: fake
+          GENAI_API_KEY: fake
         run: python3 -m unittest test_ecolens.py
