@@ -25,6 +25,22 @@
     <div class="w-full max-w-6xl mx-auto py-12 px-4 pt-24">
         <h1 class="text-4xl font-bold text-center mb-10">Your Pantry</h1>
 
+        <!-- Recommendations Section -->
+        {% if recommendations %}
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 border border-gray-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-green-600">Healthier Recommendations</h2>
+                <button id="refreshRecommendations" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition text-sm">
+                    Refresh Recommendations
+                </button>
+            </div>
+            
+            <div id="recommendationsContent" class="prose max-w-none">
+                <div class="whitespace-pre-line text-gray-700">{{ recommendations }}</div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Toggle Buttons -->
         <div class="flex justify-center mb-8">
             <div class="flex space-x-2 bg-gray-200 rounded-lg p-1">
@@ -114,13 +130,14 @@
             const gradeBtn = document.getElementById('gradeBtn');
             const ecoTable = document.getElementById('ecoTable');
             const gradeTable = document.getElementById('gradeTable');
+            const refreshRecommendations = document.getElementById('refreshRecommendations');
+            const recommendationsContent = document.getElementById('recommendationsContent');
 
+            // Table switching
             ecoBtn.addEventListener('click', function() {
-                // Show eco table, hide grade table
                 ecoTable.classList.remove('hidden');
                 gradeTable.classList.add('hidden');
                 
-                // Update button styles
                 ecoBtn.classList.add('bg-green-600', 'text-white');
                 ecoBtn.classList.remove('text-gray-700', 'hover:bg-gray-100');
                 gradeBtn.classList.remove('bg-blue-600', 'text-white');
@@ -128,19 +145,46 @@
             });
 
             gradeBtn.addEventListener('click', function() {
-                // Show grade table, hide eco table
                 gradeTable.classList.remove('hidden');
                 ecoTable.classList.add('hidden');
                 
-                // Update button styles
                 gradeBtn.classList.add('bg-blue-600', 'text-white');
                 gradeBtn.classList.remove('text-gray-700', 'hover:bg-gray-100');
                 ecoBtn.classList.remove('bg-green-600', 'text-white');
                 ecoBtn.classList.add('text-gray-700', 'hover:bg-gray-100');
             });
+
+            // Refresh recommendations
+            if (refreshRecommendations) {
+                refreshRecommendations.addEventListener('click', function() {
+                    refreshRecommendations.disabled = true;
+                    refreshRecommendations.textContent = 'Generating...';
+                    
+                    fetch('/pantry/generate_recommendations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.recommendations) {
+                            recommendationsContent.innerHTML = `<div class="whitespace-pre-line text-gray-700">${data.recommendations}</div>`;
+                        } else {
+                            alert('Failed to generate recommendations');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error generating recommendations');
+                    })
+                    .finally(() => {
+                        refreshRecommendations.disabled = false;
+                        refreshRecommendations.textContent = 'Refresh Recommendations';
+                    });
+                });
+            }
         });
     </script>
 </body>
-
-
 </html>
