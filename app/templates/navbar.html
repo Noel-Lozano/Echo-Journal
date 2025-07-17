@@ -1,8 +1,10 @@
 <nav class="flex items-center justify-between p-4 bg-white text-gray-800">
     <div class="flex items-center">
-        <a href="{{ url_for('home') }}" class="text-2xl font-bold tracking-tight text-green-600 hover:text-blue-700 transition-all duration-200
+        <a href="{{ url_for('auth.home') }}" class="text-2xl font-bold tracking-tight text-green-600 hover:text-green-700 transition-all duration-200
 ">EchoLens</a>
     </div>
+
+    {% if request.path == '/' %}
     <div class="hidden md:flex space-x-6 text-gray-700 font-medium">
         <a href="#home" class="hover:text-green-600">Home</a>
         <a href="#about" class="hover:text-green-600">About Us</a>
@@ -10,8 +12,11 @@
         <a href="#reviews" class="hover:text-green-600">Reviews</a>
         <a href="#qa" class="hover:text-green-600">Q&A</a>
     </div>
+    
+
     <div class="flex items-center space-x-4">
-        <a href="{{ url_for('login') }}" class="text-gray-700 hover:text-green-600">Log in</a>
-        <a href="{{ url_for('signup') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-blue-700">Sign Up</a>
+        <a href="{{ url_for('auth.login') }}" class="text-gray-700 hover:text-green-600">Log in</a>
+        <a href="{{ url_for('auth.signup') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Sign Up</a>
     </div>
+    {% endif %}
 </nav>
