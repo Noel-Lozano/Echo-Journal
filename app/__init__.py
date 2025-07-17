@@ -28,11 +28,5 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-    
-    # PLEASE NOTE: This is a development secret key.
-    # In production, you should set a strong secret key in your environment variables.
-    
-    app.secret_key = "dev"
-    print("WARNING: Using a weak secret key.")
 
     return app
