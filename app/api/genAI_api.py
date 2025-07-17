@@ -74,39 +74,41 @@ def generate_pantry_recommendations(user_id):
     pantry_data = ""
     for item in pantry_items:
         pantry_data += f"""
-    Product: {item.product_name}
-    Eco Score: {item.eco_score}
-    Health Score: {item.score}
-    Pros: {item.pros}
-    Cons: {item.cons}
-    ---
-    """
+            Product: {item.product_name}
+            Eco Score: {item.eco_score}
+            Health Score: {item.score}
+            Pros: {item.pros}
+            Cons: {item.cons}
+            ---
+        """
 
-        profile_text = get_profile(user_id) or "No specific dietary preferences or restrictions mentioned."
+    profile_text = get_profile(user_id) or "No specific dietary preferences or restrictions mentioned."
 
-        prompt = f"""
-    You are a nutritionist and health expert. Based on the user's pantry contents below, provide healthier food recommendations.
-    User Profile: {profile_text}
-    Current Pantry Contents:
-    {pantry_data}
-    Please provide 4-5 specific healthier food recommendations that would improve this user's pantry. For each recommendation, format it exactly as follows and add a new line between each recommendation:
-    RECOMMENDATION: [Specific product name or food category]
-    REASON 1: [One specific health or sustainability benefit]
-    REASON 2: [Another specific benefit related to the user's profile or pantry gaps]
-    Focus on:
-    - Replacing less healthy items with better alternatives
-    - Adding missing nutritional components
-    - Considering the user's profile and dietary needs
-    - Suggesting specific brands or types when possible
-    Keep each reason to one concise sentence.
-    """
+    prompt = f"""
+        You are a nutritionist and health expert. Based on the user's pantry contents below, provide healthier food recommendations.
+        User Profile: {profile_text}
+        Current Pantry Contents:
+        {pantry_data}
+        Please provide 4-5 specific healthier food recommendations that would improve this user's pantry. For each recommendation, format it exactly as follows and add a new line between each recommendation:
+        1. Recommendation
+            Reason for recommendation (a concise sentence, just the sentence no prefix)
+        2. Recommendation
+            Reason for recommendation (a concise sentence, just the sentence no prefix)
+
+        Focus on:
+        - Replacing less healthy items with better alternatives
+        - Adding missing nutritional components
+        - Considering the user's profile and dietary needs
+        - Suggesting specific brands or types when possible
+        Keep each reason to one concise sentence. Do not include any additional commentary or explanations, just begin with the list.
+        """
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            config=types.GenerateContentConfig(
-                system_instruction="You are a nutritionist providing personalized food recommendations."
-            ),
+            model="gemma-3n-e4b-it",
+            # config=types.GenerateContentConfig(
+            #     system_instruction="You are a nutritionist providing personalized food recommendations."
+            # ),
             contents=prompt,
         )
         return response.text

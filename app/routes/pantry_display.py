@@ -16,9 +16,7 @@ def show_pantry():
     grade_sort = Pantry.query.filter_by(user_id=user_id).order_by(cast(Pantry.score, Integer).desc()).all()
     
     # Generate recommendations on page load
-    recommendations = None
-    if eco_sort:  # Only generate if user has pantry items
-        recommendations = generate_pantry_recommendations(user_id)
+    recommendations = "No recommendations available."
 
     return render_template("pantry.html", 
                          eco_sort=eco_sort, 
