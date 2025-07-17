@@ -2,7 +2,7 @@ import os
 from google import genai
 from google.genai import types
 
-GENAI_API_KEY = os.getenv("GENAI_API_KEY")
+GENAI_API_KEY = os.environ.get("GENAI_API_KEY")
 if not GENAI_API_KEY:
     raise ValueError("GENAI_API_KEY is not set in the environment variables.")
 
