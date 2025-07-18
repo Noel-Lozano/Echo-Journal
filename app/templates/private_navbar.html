@@ -1,0 +1,37 @@
+<nav class="bg-white fixed top-0 w-full z-50 h-[55px]">
+    <div class="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+        <a href="/dashboard" class="text-2xl font-bold text-green-600 flex items-center">
+            <i class="fa-solid fa-leaf"></i>&nbsp;EcoLens
+        </a>
+        <div class="absolute left-1/2 transform -translate-x-1/2 space-x-6 text-sm font-medium">
+            <a href="/dashboard" class="text-gray-700 hover:text-green-600 transition">Dashboard</a>
+            <a href="/search" class="text-gray-700 hover:text-green-600 transition">Search</a>
+            <a href="/pantry" class="text-gray-700 hover:text-green-600 transition">My Pantry</a>
+        </div>
+        <div class="relative inline-flex group z-50">
+            <!-- Hover Trigger -->
+            <div class="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition font-medium text-sm cursor-pointer">
+                {% if user and user.profile and user.profile.photo %}
+                  <img src="{{ user.profile.photo }}" alt="Profile Photo" class="w-7 h-7 rounded-full object-cover border-2 border-gray-300" />
+                {% else %}
+                  <i class="fa-solid fa-user-circle text-xl"></i>
+                {% endif %}
+                <span>Account</span>
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+
+            <!-- Dropdown (stays within group on hover) -->
+            <div class="absolute right-0 top-full w-40 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
+                <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                <form action="{{ url_for('auth.logout') }}" method="POST">
+                <button type="submit" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center">
+                    <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
+                </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>

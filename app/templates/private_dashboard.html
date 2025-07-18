@@ -1,0 +1,36 @@
+{% extends "private_base.html" %}
+{% block title %}Dashboard - EcoLens{% endblock %}
+{% block content %}
+    <main> <!-- Removed pb-16 padding-bottom -->
+        <div class="w-full bg-white shadow pb-16">
+            <div class="max-w-[1200px] mx-auto px-4">
+                <div class="user-info py-4">
+                    <h2 class="text-xl font-semibold">Welcome, {{ user.username }}!</h2>
+                    <p class="text-gray-600">You have <span class="font-bold">{{ pantry_count }}</span> item{{ 's' if pantry_count != 1 else '' }} in your pantry.</p>
+                </div>
+                <div class="mt-6 flex flex-row gap-8 justify-center items-center"> <!-- Side by side -->
+                    <!-- Eco Score Ring Graph -->
+                    <div class="bg-green-100 rounded-lg p-6 flex flex-col items-center w-64">
+                        <span class="text-lg font-medium mb-2">Average Eco Score</span>
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" stroke="#d1fae5" stroke-width="15" fill="none" />
+                            {% set eco_percent = (avg_eco_score if avg_eco_score is not none else 0) / 100 * 314.159 %}
+                            <circle cx="60" cy="60" r="50" stroke="#059669" stroke-width="15" fill="none" stroke-dasharray="{{ eco_percent }}, 314.159" stroke-linecap="round" transform="rotate(-90 60 60)" />
+                            <text x="60" y="68" text-anchor="middle" font-size="2em" fill="#059669">{{ avg_eco_score if avg_eco_score is not none else 'N/A' }}</text>
+                        </svg>
+                    </div>
+                    <!-- Score Ring Graph -->
+                    <div class="bg-blue-100 rounded-lg p-6 flex flex-col items-center w-64">
+                        <span class="text-lg font-medium mb-2">Average Score</span>
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" stroke="#dbeafe" stroke-width="15" fill="none" />
+                            {% set score_percent = (avg_score if avg_score is not none else 0) / 100 * 314.159 %}
+                            <circle cx="60" cy="60" r="50" stroke="#2563eb" stroke-width="15" fill="none" stroke-dasharray="{{ score_percent }}, 314.159" stroke-linecap="round" transform="rotate(-90 60 60)" />
+                            <text x="60" y="68" text-anchor="middle" font-size="2em" fill="#2563eb">{{ avg_score if avg_score is not none else 'N/A' }}</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

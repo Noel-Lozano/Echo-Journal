@@ -1,0 +1,252 @@
+{% extends "public_base.html" %}
+{% block title %}Sign Up - EcoLens{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-50 py-12 px-4">
+  <div class="w-full max-w-md space-y-6 bg-white p-8 rounded-xl shadow flex flex-col items-center border border-gray-200">
+    <h2 id="signup-heading" class="text-3xl font-extrabold text-center text-gray-900">Getting Started</h2>
+    <!-- Step 1: Username & Password -->
+    <form id="signup-step1" class="space-y-6 w-full">
+      <div class="space-y-4">
+        <input type="text" name="username" id="username" placeholder="Username" required class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+        <input type="password" name="password" id="password" placeholder="Password" required class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+      </div>
+      <button type="button" id="next-step1" class="w-full bg-green-600 text-white py-3 rounded-md font-semibold hover:bg-green-700">Next</button>
+    </form>
+    <!-- Step 2: First & Last Name -->
+    <form id="signup-step2" class="space-y-6 w-full hidden">
+      <div class="space-y-4">
+        <input type="text" name="first_name" id="first_name" placeholder="First Name" required class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+        <input type="text" name="last_name" id="last_name" placeholder="Last Name" required class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+      </div>
+      <div class="flex justify-between">
+        <button type="button" id="back-step2" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-md font-semibold hover:bg-gray-400">Back</button>
+        <button type="button" id="next-step2" class="bg-green-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-green-700">Next</button>
+      </div>
+    </form>
+    <!-- Step 3: Preferences/Tags -->
+    <form id="signup-step3" class="space-y-6 w-full hidden">
+      <div class="space-y-4">
+        <label class="block text-gray-700 font-medium">Dietary Preferences (select all that apply):</label>
+        <div class="flex flex-wrap gap-2">
+          <label><input type="checkbox" name="diet" value="vegan" class="mr-1">Vegan</label>
+          <label><input type="checkbox" name="diet" value="vegetarian" class="mr-1">Vegetarian</label>
+          <label><input type="checkbox" name="diet" value="pescatarian" class="mr-1">Pescatarian</label>
+          <label><input type="checkbox" name="diet" value="omnivore" class="mr-1">Omnivore</label>
+        </div>
+        <label class="block text-gray-700 font-medium mt-4">Allergies (comma-separated):</label>
+        <input type="text" name="allergies" id="allergies" placeholder="e.g. peanuts, gluten" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+        <label class="block text-gray-700 font-medium mt-4">Other Tags (comma-separated):</label>
+        <input type="text" name="other_tags" id="other_tags" placeholder="e.g. low-carb, halal" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+      </div>
+      <div class="flex justify-between">
+        <button type="button" id="back-step3" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-md font-semibold hover:bg-gray-400">Back</button>
+        <button type="button" id="next-step3" class="bg-green-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-green-700">Next</button>
+      </div>
+    </form>
+    <!-- Step 4: Profile Photo -->
+    <form id="signup-step4" class="space-y-6 w-full hidden" enctype="multipart/form-data">
+      <div class="space-y-4 text-center">
+        <label class="block text-gray-700 font-medium mb-2">Profile Photo (optional):</label>
+        <div id="photo-preview" class="flex justify-center mb-2">
+          <i id="default-photo-icon" class="fa-solid fa-user-circle text-6xl text-gray-400"></i>
+          <img id="uploaded-photo" src="" alt="Profile Photo" class="hidden w-24 h-24 rounded-full object-cover border-2 border-gray-300" />
+        </div>
+        <input type="file" name="photo" id="photo" accept="image/*" class="w-full" />
+        <div class="text-xs text-gray-500">Leave blank to use the default icon.</div>
+      </div>
+      <div class="flex justify-between">
+        <button type="button" id="back-step4" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-md font-semibold hover:bg-gray-400">Back</button>
+        <button type="button" id="next-step4" class="bg-green-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-green-700">Next</button>
+      </div>
+    </form>
+    <!-- Step 5: Overview/Confirmation -->
+    <form id="signup-step5" class="space-y-6 w-full hidden">
+      <div class="space-y-4">
+        <h3 class="text-xl font-semibold text-center mb-4">Review Your Information</h3>
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="mb-2"><strong>Username:</strong> <span id="review-username"></span></div>
+          <div class="mb-2"><strong>Name:</strong> <span id="review-name"></span></div>
+          <div class="mb-2"><strong>Dietary Preferences:</strong> <span id="review-diets"></span></div>
+          <div class="mb-2"><strong>Allergies:</strong> <span id="review-allergies"></span></div>
+          <div class="mb-2"><strong>Other Tags:</strong> <span id="review-other-tags"></span></div>
+          <div class="mb-2"><strong>Profile Photo:</strong> <span id="review-photo"></span></div>
+        </div>
+      </div>
+      <div class="flex justify-between">
+        <button type="button" id="back-step5" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-md font-semibold hover:bg-gray-400">Back</button>
+        <button type="submit" id="submit-signup" class="bg-green-600 text-white py-2 px-6 rounded-md font-semibold hover:bg-green-700">Create Account</button>
+      </div>
+    </form>
+    <p class="text-center text-sm text-gray-600">
+      Already have an account?
+      <a href="{{url_for('auth.login')}}" class="text-green-600 hover:underline">Log in</a>
+    </p>
+  </div>
+</div>
+<script>
+// Store signup data between steps
+const signupData = {};
+
+// Step navigation
+const step1 = document.getElementById('signup-step1');
+const step2 = document.getElementById('signup-step2');
+const step3 = document.getElementById('signup-step3');
+const step4 = document.getElementById('signup-step4');
+const step5 = document.getElementById('signup-step5');
+const heading = document.getElementById('signup-heading');
+
+// Step 1
+document.getElementById('next-step1').onclick = async function() {
+  // Validate step 1
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  if (!username || !password) {
+    alert('Please enter a username and password.');
+    return;
+  }
+  // Check if username is taken
+  try {
+    const res = await fetch('/check-username', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    if (data.taken) {
+      alert('That username is already taken. Please choose another.');
+      return;
+    }
+  } catch (e) {
+    alert('Could not check username. Please try again.');
+    return;
+  }
+  signupData.username = username;
+  signupData.password = password;
+  step1.classList.add('hidden');
+  step2.classList.remove('hidden');
+  heading.textContent = 'Who Are You?';
+};
+
+document.getElementById('back-step2').onclick = function() {
+  step2.classList.add('hidden');
+  step1.classList.remove('hidden');
+  heading.textContent = 'Getting Started';
+};
+// Step 2
+document.getElementById('next-step2').onclick = function() {
+  // Validate step 2
+  const firstName = document.getElementById('first_name').value.trim();
+  const lastName = document.getElementById('last_name').value.trim();
+  if (!firstName || !lastName) {
+    alert('Please enter your first and last name.');
+    return;
+  }
+  signupData.first_name = firstName;
+  signupData.last_name = lastName;
+  step2.classList.add('hidden');
+  step3.classList.remove('hidden');
+  heading.textContent = 'Your Preferences';
+};
+// Step 3
+document.getElementById('back-step3').onclick = function() {
+  step3.classList.add('hidden');
+  step2.classList.remove('hidden');
+  heading.textContent = 'Who Are You?';
+};
+document.getElementById('next-step3').onclick = function() {
+  // Collect preferences
+  const diets = Array.from(document.querySelectorAll('input[name="diet"]:checked')).map(cb => cb.value);
+  const allergies = document.getElementById('allergies').value.split(',').map(s => s.trim()).filter(Boolean);
+  const otherTags = document.getElementById('other_tags').value.split(',').map(s => s.trim()).filter(Boolean);
+  signupData.preferences = {
+    diets,
+    allergies,
+    other_tags: otherTags
+  };
+  step3.classList.add('hidden');
+  step4.classList.remove('hidden');
+  heading.textContent = 'Profile Photo';
+};
+// Step 4
+const photoInput = document.getElementById('photo');
+const uploadedPhoto = document.getElementById('uploaded-photo');
+const defaultPhotoIcon = document.getElementById('default-photo-icon');
+photoInput.onchange = function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      uploadedPhoto.src = evt.target.result;
+      uploadedPhoto.classList.remove('hidden');
+      defaultPhotoIcon.classList.add('hidden');
+      signupData.photo = evt.target.result; // Store base64 for now
+    };
+    reader.readAsDataURL(file);
+  } else {
+    uploadedPhoto.classList.add('hidden');
+    defaultPhotoIcon.classList.remove('hidden');
+    signupData.photo = null;
+    // Also clear the file input value so user can re-select the same file if desired
+    photoInput.value = '';
+  }
+};
+document.getElementById('back-step4').onclick = function() {
+  step4.classList.add('hidden');
+  step3.classList.remove('hidden');
+  heading.textContent = 'Your Preferences';
+};
+document.getElementById('next-step4').onclick = function() {
+  // If no photo uploaded, use default
+  if (!signupData.photo) {
+    signupData.photo = null;
+  }
+  // Fill in review fields
+  document.getElementById('review-username').textContent = signupData.username;
+  document.getElementById('review-name').textContent = signupData.first_name + ' ' + signupData.last_name;
+  document.getElementById('review-diets').textContent = (signupData.preferences.diets || []).join(', ') || 'None';
+  document.getElementById('review-allergies').textContent = (signupData.preferences.allergies || []).join(', ') || 'None';
+  document.getElementById('review-other-tags').textContent = (signupData.preferences.other_tags || []).join(', ') || 'None';
+  if (signupData.photo) {
+    document.getElementById('review-photo').innerHTML = '<img src="' + signupData.photo + '" class="inline w-10 h-10 rounded-full object-cover border-2 border-gray-300" />';
+  } else {
+    document.getElementById('review-photo').innerHTML = '<i class="fa-solid fa-user-circle text-2xl text-gray-400"></i>';
+  }
+  step4.classList.add('hidden');
+  step5.classList.remove('hidden');
+  heading.textContent = 'Review & Confirm';
+};
+// Step 5
+document.getElementById('back-step5').onclick = function() {
+  step5.classList.add('hidden');
+  step4.classList.remove('hidden');
+  heading.textContent = 'Profile Photo';
+};
+document.getElementById('signup-step5').onsubmit = async function(e) {
+  e.preventDefault();
+  const submitBtn = document.getElementById('submit-signup');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Creating...';
+  try {
+    const res = await fetch('/complete-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(signupData)
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.location.href = '/dashboard';
+    } else {
+      alert(data.error || 'Signup failed.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account';
+    }
+  } catch (err) {
+    alert('Could not complete signup. Please try again.');
+    console.error(err);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create Account';
+  }
+};
+</script>
+{% endblock %}
