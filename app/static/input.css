@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+.gradient-transition-gw {
+   width: 100vw;
+   height: 50px;
+   background: linear-gradient(to bottom, transparent, white);
+ }
+
+ .gradient-transition-wg {
+   width: 100vw;
+   height: 50px;
+   background: linear-gradient(to bottom, white, #f5f5f5);
+ }
+
+ .gradient-transition-wg-50 {
+   width: 100vw;
+   height: 50px;
+   background: linear-gradient(to bottom, white, #f9fafb);
+ }
