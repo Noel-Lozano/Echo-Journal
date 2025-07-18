@@ -1,0 +1,163 @@
+{% extends "private_base.html" %}
+
+{% block title %}Barcode Search{% endblock %}
+
+{% block content %}
+  <div class="flex flex-col items-center justify-center min-h-[60vh]">
+    <h1 class="text-3xl font-bold mb-6">Barcode Search</h1>
+    <div id="scanner-container" class="mb-4"></div>
+    <div class="border border-gray-300 rounded-lg mb-6">
+      <button id="scan-btn" onclick="startScan()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Start Scan</button>
+    </div>
+
+    <div id="result-container" class="w-full flex flex-col items-center max-w-[1200px] px-4 sm:px-6 md:px-8" style="word-break:break-word;"></div>
+  </div>
+
+  <script src="https://unpkg.com/@ericblade/quagga2@1.2.6/dist/quagga.min.js"></script>
+  <style>
+    #scanner-container {
+      width: 200px;
+      height: 200px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+    }
+    /* Ensure result text wraps and doesn't overflow */
+    #result-container ul, #result-container li {
+      word-break: break-word;
+      white-space: normal;
+    }
+  </style>
+  <script>
+    let enableScanning = false;
+    const scanBtn = document.getElementById('scan-btn');
+    const resultContainer = document.getElementById('result-container');
+
+    function startScan() {
+      enableScanning = true;
+      scanBtn.textContent = 'Scanning...';
+      scanBtn.disabled = true;
+      scanBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+      scanBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+      resultContainer.innerHTML = '';
+    }
+
+    function resetScanBtn() {
+      scanBtn.textContent = 'Start Scan';
+      scanBtn.disabled = false;
+      scanBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+      scanBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+    }
+
+    function renderResult(result) {
+      function displayVal(val) {
+        return (val === null || val === undefined) ? 'Unavailable' : val;
+      }
+      resultContainer.innerHTML = `
+        <h3 class="text-xl font-semibold mb-2">Result</h3>
+        <ul class="mb-4">
+          <li><strong>Product Name:</strong> ${displayVal(result.product_name)}</li>
+          <li><strong>Eco Score:</strong> ${displayVal(result.eco_score)}</li>
+          <li><strong>Health Score:</strong> ${displayVal(result.health_score)}</li>
+          <li><strong>Pros:</strong> ${displayVal(result.pros)}</li>
+          <li><strong>Cons:</strong> ${displayVal(result.cons)}</li>
+        </ul>
+        <form id="add-to-pantry-form" class="w-full flex flex-col items-center">
+          <input type="hidden" name="product_name" value="${displayVal(result.product_name)}">
+          <input type="hidden" name="eco_score" value="${displayVal(result.eco_score)}">
+          <input type="hidden" name="health_score" value="${displayVal(result.health_score)}">
+          <input type="hidden" name="pros" value="${displayVal(result.pros)}">
+          <input type="hidden" name="cons" value="${displayVal(result.cons)}">
+          <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Add to Pantry</button>
+        </form>
+        <div id="pantry-success-msg" class="mt-4 text-green-600 font-semibold" style="display:none;"></div>
+      `;
+
+      const form = document.getElementById('add-to-pantry-form');
+      const successMsg = document.getElementById('pantry-success-msg');
+      if (form) {
+        form.onsubmit = function(e) {
+          e.preventDefault();
+          const data = {
+            product_name: form.product_name.value,
+            eco_score: form.eco_score.value === 'Unavailable' ? null : form.eco_score.value,
+            health_score: form.health_score.value === 'Unavailable' ? null : form.health_score.value,
+            pros: form.pros.value,
+            cons: form.cons.value
+          };
+          fetch('/search/api/add-to-pantry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          })
+            .then(res => res.json())
+            .then(json => {
+              if (json.success) {
+                successMsg.textContent = 'Element added to pantry.';
+                successMsg.style.display = '';
+              } else {
+                successMsg.textContent = json.error || 'Failed to add to pantry.';
+                successMsg.style.display = '';
+                successMsg.classList.remove('text-green-600');
+                successMsg.classList.add('text-red-600');
+              }
+            })
+            .catch(() => {
+              successMsg.textContent = 'Failed to add to pantry.';
+              successMsg.style.display = '';
+              successMsg.classList.remove('text-green-600');
+              successMsg.classList.add('text-red-600');
+            });
+        };
+      }
+    }
+
+    function renderError(error) {
+      resultContainer.innerHTML = `<p class="text-red-600">${error}</p>`;
+    }
+
+    Quagga.init({
+      inputStream: {
+        type: "LiveStream",
+        target: document.getElementById("scanner-container"),
+        constraints: {
+          facingMode: "environment"
+        }
+      },
+      decoder: {
+        readers: ["ean_reader", "upc_reader"]
+      }
+    }, err => {
+      if (!err) Quagga.start();
+    });
+
+    Quagga.onDetected(data => {
+      if (!enableScanning) return;
+      enableScanning = false;
+      resetScanBtn();
+
+      const barcode = data.codeResult.code;
+      // Fetch result from new API endpoint
+      resultContainer.innerHTML = '<p class="text-gray-600">Fetching product details...</p>';
+      fetch('/search/api/barcode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ barcode })
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (json.result) {
+            renderResult(json.result);
+          } else {
+            renderError(json.error || 'Unknown error.');
+          }
+        })
+        .catch(e => {
+          renderError('Fetch failed: ' + e);
+        });
+    });
+  </script>
+{% endblock %}

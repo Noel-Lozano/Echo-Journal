@@ -1,0 +1,72 @@
+{% extends "private_base.html" %}
+{% block title %}Settings - EcoLens{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto mt-12 bg-white rounded-xl shadow p-8 border border-gray-200 relative">
+  <h2 class="text-2xl font-bold mb-6 text-center">Settings</h2>
+  <form id="settings-password-form" class="flex flex-col gap-4 mt-4">
+    <div>
+      <label class="block font-semibold mb-1">Current Password <span class="text-red-500">*</span></label>
+      <input type="password" name="current_password" class="w-full border rounded px-3 py-2" required />
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">New Password <span class="text-red-500">*</span></label>
+      <input type="password" name="new_password" class="w-full border rounded px-3 py-2" required />
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">Confirm New Password <span class="text-red-500">*</span></label>
+      <input type="password" name="confirm_password" class="w-full border rounded px-3 py-2" required />
+    </div>
+    <div class="flex gap-2">
+      <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Change Password</button>
+    </div>
+    <div id="settings-success" class="text-green-600 font-semibold mt-2 hidden"></div>
+    <div id="settings-error" class="text-red-600 font-semibold mt-2 hidden"></div>
+  </form>
+</div>
+<script>
+  const settingsForm = document.getElementById('settings-password-form');
+  const successMsg = document.getElementById('settings-success');
+  const errorMsg = document.getElementById('settings-error');
+  if (settingsForm) {
+    settingsForm.onsubmit = function(e) {
+      e.preventDefault();
+      successMsg.classList.add('hidden');
+      errorMsg.classList.add('hidden');
+      const formData = new FormData(settingsForm);
+      const current_password = formData.get('current_password');
+      const new_password = formData.get('new_password');
+      const confirm_password = formData.get('confirm_password');
+      if (!current_password || !new_password || !confirm_password) {
+        errorMsg.textContent = 'All fields are required.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      if (new_password !== confirm_password) {
+        errorMsg.textContent = 'New passwords do not match.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      fetch('/settings/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password, new_password })
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (json.success) {
+            successMsg.textContent = 'Password changed successfully!';
+            successMsg.classList.remove('hidden');
+            settingsForm.reset();
+          } else {
+            errorMsg.textContent = json.error || 'Failed to change password.';
+            errorMsg.classList.remove('hidden');
+          }
+        })
+        .catch(() => {
+          errorMsg.textContent = 'Failed to change password.';
+          errorMsg.classList.remove('hidden');
+        });
+    };
+  }
+</script>
+{% endblock %} 

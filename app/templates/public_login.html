@@ -1,0 +1,73 @@
+{% extends "public_base.html" %}
+{% block title %}Login - EcoLens{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-50 py-12 px-4">
+  <div class="w-full max-w-md space-y-6 bg-white p-8 rounded-xl shadow">
+    <h2 class="text-3xl font-extrabold text-center text-gray-900">Log in to EcoLens</h2>
+    <div id="login-error" class="w-full bg-red-100 border border-red-300 text-red-700 rounded-lg px-4 py-3 mb-4 text-center hidden"></div>
+    <form id="login-form" class="space-y-6" method="POST" action="{{url_for('auth.login')}}">
+      <div class="space-y-4">
+        <input type="text" name="username" id="login-username" placeholder="Username or Email" required class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="password" name="password" id="login-password" placeholder="Password" required class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700">Log In</button>
+    </form>
+    <p class="text-center text-sm text-gray-600">
+      Don't have an account?
+      <a href="{{ url_for('auth.signup') }}" class="text-green-600 hover:underline">Sign up</a>
+    </p>
+    <script>
+    document.getElementById('login-form').onsubmit = async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errorBox = document.getElementById('login-error');
+      errorBox.classList.add('hidden');
+      errorBox.textContent = '';
+      // Check username
+      let usernameValid = false;
+      try {
+        const res = await fetch('/check-username', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        if (!data.taken) {
+          errorBox.textContent = 'Username does not exist.';
+          errorBox.classList.remove('hidden');
+          return;
+        } else {
+          usernameValid = true;
+        }
+      } catch (err) {
+        errorBox.textContent = 'Could not check username. Please try again.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      // Check password
+      try {
+        const res = await fetch('/check-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!data.valid) {
+          errorBox.textContent = data.error || 'Incorrect password.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+      } catch (err) {
+        errorBox.textContent = 'Could not check password. Please try again.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      // If both valid, submit the form
+      e.target.submit();
+    };
+    </script>
+  </div>
+</div>
+{% endblock %}

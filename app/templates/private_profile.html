@@ -1,0 +1,175 @@
+{% extends "private_base.html" %}
+{% block title %}Profile - EcoLens{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto mt-12 bg-white rounded-xl shadow p-8 border border-gray-200 relative">
+  <h2 class="text-2xl font-bold mb-6 text-center">Your Profile</h2>
+  <button id="edit-profile-btn" class="absolute top-6 right-6 px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 transition text-sm">Edit</button>
+  <div class="flex flex-col items-center mb-6">
+    {% if profile and profile.photo %}
+      <img src="{{ profile.photo }}" alt="Profile Photo" class="w-24 h-24 rounded-full object-cover border-2 border-gray-300 mb-2" />
+    {% else %}
+      <i class="fa-solid fa-user-circle text-6xl text-gray-400 mb-2"></i>
+    {% endif %}
+    <div class="text-lg font-semibold" id="profile-username">{{ user.username }}</div>
+    <div class="text-gray-500 text-sm">Joined: {{ profile.date_joined.strftime('%B %d, %Y') if profile and profile.date_joined else 'N/A' }}</div>
+  </div>
+  <div id="profile-view-section">
+    <div class="mb-4">
+      <strong>Name:</strong> <span id="profile-name">{{ profile.first_name or '' }} {{ profile.last_name or '' }}</span>
+    </div>
+    <div class="mb-4">
+      <strong>Dietary Preferences:</strong>
+      <span id="profile-diets">{% if profile and profile.preferences and profile.preferences.diets %}{{ profile.preferences.diets|join(', ') }}{% else %}None{% endif %}</span>
+    </div>
+    <div class="mb-4">
+      <strong>Allergies:</strong>
+      <span id="profile-allergies">{% if profile and profile.preferences and profile.preferences.allergies %}{{ profile.preferences.allergies|join(', ') }}{% else %}None{% endif %}</span>
+    </div>
+    <div class="mb-4">
+      <strong>Other Tags:</strong>
+      <span id="profile-tags">{% if profile and profile.preferences and profile.preferences.other_tags %}{{ profile.preferences.other_tags|join(', ') }}{% else %}None{% endif %}</span>
+    </div>
+    <div class="mb-4">
+      <strong>About Me:</strong>
+      <div class="bg-gray-50 rounded p-3 border border-gray-100 mt-1 min-h-[40px]" id="profile-bio">{{ profile.text or 'No bio yet.' }}</div>
+    </div>
+  </div>
+  <form id="profile-edit-form" class="hidden flex flex-col gap-4 mt-4">
+    <div>
+      <label class="block font-semibold mb-1">Username <span class="text-red-500">*</span></label>
+      <input type="text" name="username" class="w-full border rounded px-3 py-2" value="{{ user.username }}" required />
+    </div>
+    <div class="flex gap-2">
+      <div class="flex-1">
+        <label class="block font-semibold mb-1">First Name <span class="text-red-500">*</span></label>
+        <input type="text" name="first_name" class="w-full border rounded px-3 py-2" value="{{ profile.first_name or '' }}" required />
+      </div>
+      <div class="flex-1">
+        <label class="block font-semibold mb-1">Last Name <span class="text-red-500">*</span></label>
+        <input type="text" name="last_name" class="w-full border rounded px-3 py-2" value="{{ profile.last_name or '' }}" required />
+      </div>
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">Profile Photo</label>
+      <input type="file" name="photo" accept="image/*" class="w-full border rounded px-3 py-2" />
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">Dietary Preferences (comma separated)</label>
+      <input type="text" name="diets" class="w-full border rounded px-3 py-2" value="{% if profile and profile.preferences and profile.preferences.diets %}{{ profile.preferences.diets|join(', ') }}{% endif %}" />
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">Allergies (comma separated)</label>
+      <input type="text" name="allergies" class="w-full border rounded px-3 py-2" value="{% if profile and profile.preferences and profile.preferences.allergies %}{{ profile.preferences.allergies|join(', ') }}{% endif %}" />
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">Other Tags (comma separated)</label>
+      <input type="text" name="other_tags" class="w-full border rounded px-3 py-2" value="{% if profile and profile.preferences and profile.preferences.other_tags %}{{ profile.preferences.other_tags|join(', ') }}{% endif %}" />
+    </div>
+    <div>
+      <label class="block font-semibold mb-1">About Me</label>
+      <textarea name="text" class="w-full border rounded px-3 py-2" rows="3">{{ profile.text or '' }}</textarea>
+    </div>
+    <div class="flex gap-2">
+      <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Save</button>
+      <button type="button" id="cancel-edit-btn" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
+    </div>
+    <div id="profile-edit-success" class="text-green-600 font-semibold mt-2 hidden"></div>
+    <div id="profile-edit-error" class="text-red-600 font-semibold mt-2 hidden"></div>
+  </form>
+</div>
+<script>
+  const editBtn = document.getElementById('edit-profile-btn');
+  const editForm = document.getElementById('profile-edit-form');
+  const viewSection = document.getElementById('profile-view-section');
+  const cancelBtn = document.getElementById('cancel-edit-btn');
+  const successMsg = document.getElementById('profile-edit-success');
+  const errorMsg = document.getElementById('profile-edit-error');
+
+  if (editBtn) {
+    editBtn.onclick = () => {
+      viewSection.style.display = 'none';
+      editForm.classList.remove('hidden');
+    };
+  }
+  if (cancelBtn) {
+    cancelBtn.onclick = () => {
+      editForm.classList.add('hidden');
+      viewSection.style.display = '';
+      successMsg.classList.add('hidden');
+      errorMsg.classList.add('hidden');
+    };
+  }
+  if (editForm) {
+    editForm.onsubmit = function(e) {
+      e.preventDefault();
+      successMsg.classList.add('hidden');
+      errorMsg.classList.add('hidden');
+      const formData = new FormData(editForm);
+      // Validation
+      const username = formData.get('username').trim();
+      const firstName = formData.get('first_name').trim();
+      const lastName = formData.get('last_name').trim();
+      if (!username || !firstName || !lastName) {
+        errorMsg.textContent = 'Username, first name, and last name are required.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      // Handle photo upload (convert to base64 if file selected)
+      const photoFile = formData.get('photo');
+      if (photoFile && photoFile.size > 0) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          submitProfileUpdate({
+            username,
+            first_name: firstName,
+            last_name: lastName,
+            text: formData.get('text'),
+            photo: event.target.result,
+            preferences: {
+              diets: formData.get('diets') ? formData.get('diets').split(',').map(s => s.trim()).filter(Boolean) : [],
+              allergies: formData.get('allergies') ? formData.get('allergies').split(',').map(s => s.trim()).filter(Boolean) : [],
+              other_tags: formData.get('other_tags') ? formData.get('other_tags').split(',').map(s => s.trim()).filter(Boolean) : []
+            }
+          });
+        };
+        reader.readAsDataURL(photoFile);
+      } else {
+        submitProfileUpdate({
+          username,
+          first_name: firstName,
+          last_name: lastName,
+          text: formData.get('text'),
+          photo: null,
+          preferences: {
+            diets: formData.get('diets') ? formData.get('diets').split(',').map(s => s.trim()).filter(Boolean) : [],
+            allergies: formData.get('allergies') ? formData.get('allergies').split(',').map(s => s.trim()).filter(Boolean) : [],
+            other_tags: formData.get('other_tags') ? formData.get('other_tags').split(',').map(s => s.trim()).filter(Boolean) : []
+          }
+        });
+      }
+    };
+  }
+  function submitProfileUpdate(data) {
+    fetch('/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json.status === 'success') {
+          successMsg.textContent = 'Profile updated!';
+          successMsg.classList.remove('hidden');
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          errorMsg.textContent = json.error || 'Failed to update profile.';
+          errorMsg.classList.remove('hidden');
+        }
+      })
+      .catch(() => {
+        errorMsg.textContent = 'Failed to update profile.';
+        errorMsg.classList.remove('hidden');
+      });
+  }
+</script>
+{% endblock %}

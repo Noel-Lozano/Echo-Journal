@@ -1,0 +1,163 @@
+{% extends "private_base.html" %}
+{% block title %}Your Pantry{% endblock %}
+{% block content %}
+    <div class="w-full max-w-6xl mx-auto py-12 px-4 pt-24">
+        <h1 class="text-4xl font-bold text-center mb-10">Your Pantry</h1>
+
+        <!-- Recommendations Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 border border-gray-200 max-w-2xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-green-600">Healthier Recommendations</h2>
+                <button id="refreshRecommendations" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition text-sm">
+                    Ask for Recommendations
+                </button>
+            </div>
+            <div id="recommendationsContent" class="prose max-w-none">
+                <div class="text-gray-700 whitespace-pre-wrap" id="recommendationsMessage">Click on the Ask for Recommendations button</div>
+            </div>
+        </div>
+
+        <!-- Toggle Buttons -->
+        <div class="flex justify-center my-6"> <!-- Adds vertical space -->
+            <div class="flex space-x-2 bg-gray-200 rounded-lg px-2 py-2"> <!-- Horizontal/vertical padding around buttons -->
+                <button id="ecoBtn" class="px-5 py-2 rounded-md font-medium transition-all duration-200 bg-green-600 text-white">
+                    Eco Score
+                </button>
+                <button id="gradeBtn" class="px-5 py-2 rounded-md font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100">
+                    Health Score
+                </button>
+            </div>
+        </div>
+
+        <!-- Eco Table -->
+        <div id="ecoTable">
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg shadow border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-3 text-left">Product Name</th>
+                            <th class="px-5 py-3 text-center">Eco Score</th>
+                            <th class="px-5 py-3 text-center">Health Score</th>
+                            <th class="px-5 py-3 text-center">Pros</th>
+                            <th class="px-5 py-3 text-center">Cons</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in eco_sort %}
+                        <tr class="border-t border-gray-200 hover:bg-gray-50">
+                            <td class="px-5 py-3 text-center">{{ item.product_name }}</td>
+                            <td class="px-5 py-3 text-center font-semibold text-green-600">{{ item.eco_score }}</td>
+                            <td class="px-5 py-3 text-center font-semibold">{{ item.score }}</td>
+                            <td class="px-5 py-3 text-center">{{ item.pros }}</td>
+                            <td class="px-5 py-3 text-center">{{ item.cons }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-8 text-gray-500">No pantry items found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Grade Table -->
+        <div id="gradeTable" class="hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg shadow border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-3 text-left">Product Name</th>
+                            <th class="px-5 py-3 text-center">Eco Score</th>
+                            <th class="px-5 py-3 text-center">Health Score</th>
+                            <th class="px-5 py-3 text-center">Pros</th>
+                            <th class="px-5 py-3 text-center">Cons</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in grade_sort %}
+                        <tr class="border-t border-gray-200 hover:bg-gray-50">
+                            <td class="px-5 py-3 text-center">{{ item.product_name }}</td>
+                            <td class="px-5 py-3 text-center font-semibold text-green-600">{{ item.eco_score }}</td>
+                            <td class="px-5 py-3 text-center font-semibold text-blue-600">{{ item.score }}</td>
+                            <td class="px-5 py-3 text-center">{{ item.pros }}</td>
+                            <td class="px-5 py-3 text-center">{{ item.cons }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-8 text-gray-500">No pantry items found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ecoBtn = document.getElementById('ecoBtn');
+            const gradeBtn = document.getElementById('gradeBtn');
+            const ecoTable = document.getElementById('ecoTable');
+            const gradeTable = document.getElementById('gradeTable');
+            const refreshRecommendations = document.getElementById('refreshRecommendations');
+            const recommendationsContent = document.getElementById('recommendationsContent');
+            const recommendationsMessage = document.getElementById('recommendationsMessage');
+            let hasAsked = false;
+
+            // Table switching
+            ecoBtn.addEventListener('click', function() {
+                ecoTable.classList.remove('hidden');
+                gradeTable.classList.add('hidden');
+                
+                ecoBtn.classList.add('bg-green-600', 'text-white');
+                ecoBtn.classList.remove('text-gray-700', 'hover:bg-gray-100');
+                gradeBtn.classList.remove('bg-blue-600', 'text-white');
+                gradeBtn.classList.add('text-gray-700', 'hover:bg-gray-100');
+            });
+
+            gradeBtn.addEventListener('click', function() {
+                gradeTable.classList.remove('hidden');
+                ecoTable.classList.add('hidden');
+                
+                gradeBtn.classList.add('bg-blue-600', 'text-white');
+                gradeBtn.classList.remove('text-gray-700', 'hover:bg-gray-100');
+                ecoBtn.classList.remove('bg-green-600', 'text-white');
+                ecoBtn.classList.add('text-gray-700', 'hover:bg-gray-100');
+            });
+
+            // Recommendations button logic
+            refreshRecommendations.addEventListener('click', function() {
+                if (!hasAsked) {
+                    refreshRecommendations.textContent = 'Refresh Recommendations';
+                    hasAsked = true;
+                }
+                recommendationsMessage.textContent = 'Loading...';
+                fetch('/pantry/generate_recommendations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(json => {
+                    let recs = json.recommendations;
+                    let formatted = '';
+                    if (Array.isArray(recs)) {
+                        if (recs.length === 0) {
+                            formatted = '<span class="text-gray-500">No recommendations available.</span>';
+                        } else {
+                            formatted = '<ol class="list-decimal ml-6 space-y-2">' +
+                                recs.map(r => `<li><span class="font-semibold">${r.recommendation}</span><br><span class="text-gray-600">${r.reason}</span></li>`).join('') +
+                                '</ol>';
+                        }
+                    } else {
+                        // fallback: plain text
+                        formatted = (recs || '').replace(/\n/g, '<br>');
+                    }
+                    recommendationsMessage.innerHTML = formatted;
+                })
+                .catch(() => {
+                    recommendationsMessage.textContent = 'Failed to fetch recommendations.';
+                });
+            });
+        });
+    </script>
+{% endblock %}

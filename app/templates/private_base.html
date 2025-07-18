@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}EcoLens{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='output.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 text-gray-900">
+    {% include "private_navbar.html" %}
+    <main class="pt-[55px]">
+        {% block content %}{% endblock %}
+    </main>
+    {% include "private_footer.html" %}
+</body>
+</html>
