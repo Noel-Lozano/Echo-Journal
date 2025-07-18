@@ -1,22 +1,20 @@
-<nav class="flex items-center justify-between p-4 bg-white text-gray-800">
-    <div class="flex items-center">
-        <a href="{{ url_for('auth.home') }}" class="text-2xl font-bold tracking-tight text-green-600 hover:text-green-700 transition-all duration-200
-"><i class="fa-solid fa-leaf"></i> EcoLens</a>
+<nav class="bg-white fixed top-0 w-full z-50 h-[55px]">
+    <div class="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+        <a href="{{ url_for('auth.home') }}" class="text-2xl font-bold text-green-600 flex items-center">
+            <i class="fa-solid fa-leaf"></i>&nbsp;EcoLens
+        </a>
+        {% if request.path == '/' %}
+        <div class="absolute left-1/2 transform -translate-x-1/2 space-x-6 text-sm font-medium hidden md:flex">
+            <a href="#home" class="hover:text-green-600 text-gray-700 transition">Home</a>
+            <a href="#about" class="hover:text-green-600 text-gray-700 transition">About Us</a>
+            <a href="#features" class="hover:text-green-600 text-gray-700 transition">Features</a>
+            <a href="#reviews" class="hover:text-green-600 text-gray-700 transition">Reviews</a>
+            <a href="#qa" class="hover:text-green-600 text-gray-700 transition">Q&amp;A</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="{{ url_for('auth.login') }}" class="text-gray-700 hover:text-green-600 transition text-sm font-medium">Log in</a>
+            <a href="{{ url_for('auth.signup') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-medium">Sign Up</a>
+        </div>
+        {% endif %}
     </div>
-
-    {% if request.path == '/' %}
-    <div class="hidden md:flex space-x-6 text-gray-700 font-medium">
-        <a href="#home" class="hover:text-green-600">Home</a>
-        <a href="#about" class="hover:text-green-600">About Us</a>
-        <a href="#features" class="hover:text-green-600">Features</a>
-        <a href="#reviews" class="hover:text-green-600">Reviews</a>
-        <a href="#qa" class="hover:text-green-600">Q&A</a>
-    </div>
-    
-
-    <div class="flex items-center space-x-4">
-        <a href="{{ url_for('auth.login') }}" class="text-gray-700 hover:text-green-600">Log in</a>
-        <a href="{{ url_for('auth.signup') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Sign Up</a>
-    </div>
-    {% endif %}
 </nav>
