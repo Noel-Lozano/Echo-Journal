@@ -5,18 +5,16 @@
 {% block content %}
 <!-- Home -->
 <div id="home" class="max-w-[1200px] mx-auto px-4 py-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-16">
+    <div class="text-center gap-8 items-center py-16">
     <div>
-        <h1 class="text-5xl font-extrabold text-gray-900 mb-4"><i class="fa-solid fa-leaf"></i> EcoLens</h1>
+        <h1 class="text-5xl font-extrabold text-gray-900 mb-4"><i class="fa-solid fa-leaf text-green-600"></i> EcoLens</h1>
         <p class="text-lg text-gray-600 mb-6">Personalized insights into your pantry's health and environmental impact — powered by AI and your dietary goals.</p>
-        <div class="flex space-x-4">
-        <a href="#" class="bg-green-600 text-white px-5 py-3 rounded-md font-semibold hover:bg-green-700">Get Started!</a>
-        <a href="#" class="text-green-600 font-semibold hover:underline">Log in</a>
+        <div class="flex space-x-4 items-center justify-center">
+          <a href="#" class="bg-green-600 text-white px-5 py-3 rounded-md font-semibold hover:bg-green-700">Get Started!</a>
+          <a href="#" class="text-green-600 font-semibold hover:underline">Log in</a>
         </div>
     </div>
-    <div class="border-2 border-gray-300 rounded-lg aspect-square flex items-center justify-center">
-        <span class="text-gray-400">[Image Placeholder]</span>
-    </div>
+    
     </div>
 </div>
 
@@ -30,33 +28,33 @@
 
     <!-- Feature 1 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <div class="border-2 border-gray-300 rounded-lg aspect-video flex items-center justify-center">
-        <span class="text-gray-400">[Image Placeholder]</span>
+        <div class="border-2 border-gray-300 rounded-lg aspect-video flex items-center justify-center bg-gray-100">
+        <img src="{{ url_for('static', filename='Photo1.png') }}" alt="Pantry search screenshot" class="object-contain w-full h-full rounded-lg" />
         </div>
         <div>
-        <h3 class="text-xl font-semibold mb-2">🔍 Smart Search</h3>
+        <h3 class="text-xl font-semibold mb-2"><i class="fa-solid fa-magnifying-glass text-green-600"></i> Smart Search</h3>
         <p class="text-gray-600">Scan barcodes or search products to get real-time eco and health insights.</p>
         </div>
     </div>
 
     <!-- Feature 2 (reversed) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <div class="md:order-2 border-2 border-gray-300 rounded-lg aspect-video flex items-center justify-center">
-        <span class="text-gray-400">[Image Placeholder]</span>
+        <div class="md:order-2 border-2 border-gray-300 rounded-lg aspect-video flex items-center justify-center bg-gray-100">
+        <img src="{{ url_for('static', filename='Photo2.png') }}" alt="Personalized scores screenshot" class="object-contain w-full h-full rounded-lg" />
         </div>
         <div class="md:order-1">
-        <h3 class="text-xl font-semibold mb-2">📊 Personalized Scores</h3>
+        <h3 class="text-xl font-semibold mb-2"><i class="fa-solid fa-chart-bar text-green-600"></i> Personalized Scores</h3>
         <p class="text-gray-600">Get AI-generated pros & cons based on your diet, allergies, and health goals.</p>
         </div>
     </div>
 
     <!-- Feature 3 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <div class="border-2 border-gray-300 rounded-lg aspect-video flex items-center justify-center">
-        <span class="text-gray-400">[Image Placeholder]</span>
+        <div class="border-2 border-gray-300 rounded-lg aspect-video flex items-center justify-center bg-gray-100">
+        <img src="{{ url_for('static', filename='Photo3.png') }}" alt="Pantry intelligence screenshot" class="object-contain w-full h-full rounded-lg" />
         </div>
         <div>
-        <h3 class="text-xl font-semibold mb-2">🧠 Pantry Intelligence</h3>
+        <h3 class="text-xl font-semibold mb-2"><i class="fa-solid fa-brain text-green-600"></i> Pantry Intelligence</h3>
         <p class="text-gray-600">Rank your pantry by eco and health scores. See what you're missing.</p>
         </div>
     </div>
@@ -71,32 +69,44 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       <div class="bg-white rounded-lg p-6 shadow text-center">
-        <div class="w-12 h-12 mx-auto bg-green-600 rounded-full mb-4"></div>
+        <div class="w-12 h-12 mx-auto bg-green-600 rounded-full mb-4 flex items-center justify-center">
+          <i class="fa-solid fa-barcode text-gray-900 text-2xl"></i>
+        </div>
         <h3 class="font-semibold text-gray-800 mb-2">Barcode Scanning</h3>
         <p class="text-sm text-gray-500">Scan food items with ease to instantly access health, environmental, and ethical scores.</p>
       </div>
       <div class="bg-white rounded-lg p-6 shadow text-center">
-        <div class="w-12 h-12 mx-auto bg-blue-600 rounded-full mb-4"></div>
+        <div class="w-12 h-12 mx-auto bg-blue-600 rounded-full mb-4 flex items-center justify-center">
+          <i class="fa-solid fa-user-check text-gray-900 text-2xl"></i>
+        </div>
         <h3 class="font-semibold text-gray-800 mb-2">Personalized Recommendations</h3>
         <p class="text-sm text-gray-500">Get product pros & cons based on your diet, allergies, and wellness goals.</p>
       </div>
       <div class="bg-white rounded-lg p-6 shadow text-center">
-        <div class="w-12 h-12 mx-auto bg-yellow-500 rounded-full mb-4"></div>
+        <div class="w-12 h-12 mx-auto bg-yellow-500 rounded-full mb-4 flex items-center justify-center">
+          <i class="fa-solid fa-chart-pie text-gray-900 text-2xl"></i>
+        </div>
         <h3 class="font-semibold text-gray-800 mb-2">Pantry Insights</h3>
         <p class="text-sm text-gray-500">View summaries of what's great, what's missing, and how to shop smarter.</p>
       </div>
       <div class="bg-white rounded-lg p-6 shadow text-center">
-        <div class="w-12 h-12 mx-auto bg-purple-600 rounded-full mb-4"></div>
+        <div class="w-12 h-12 mx-auto bg-purple-600 rounded-full mb-4 flex items-center justify-center">
+          <i class="fa-solid fa-scale-balanced text-gray-900 text-2xl"></i>
+        </div>
         <h3 class="font-semibold text-gray-800 mb-2">Ethical Ratings</h3>
         <p class="text-sm text-gray-500">Learn how products score on labor practices, animal welfare, and environmental ethics.</p>
       </div>
       <div class="bg-white rounded-lg p-6 shadow text-center">
-        <div class="w-12 h-12 mx-auto bg-pink-600 rounded-full mb-4"></div>
+        <div class="w-12 h-12 mx-auto bg-pink-600 rounded-full mb-4 flex items-center justify-center">
+          <i class="fa-solid fa-leaf text-gray-900 text-2xl"></i>
+        </div>
         <h3 class="font-semibold text-gray-800 mb-2">Eco Score Breakdown</h3>
         <p class="text-sm text-gray-500">Understand carbon impact, packaging footprint, and supply chain transparency.</p>
       </div>
       <div class="bg-white rounded-lg p-6 shadow text-center">
-        <div class="w-12 h-12 mx-auto bg-indigo-600 rounded-full mb-4"></div>
+        <div class="w-12 h-12 mx-auto bg-indigo-600 rounded-full mb-4 flex items-center justify-center">
+          <i class="fa-solid fa-ranking-star text-gray-900 text-2xl"></i>
+        </div>
         <h3 class="font-semibold text-gray-800 mb-2">Smart Pantry Ranking</h3>
         <p class="text-sm text-gray-500">See which items align most with your values — and which fall short.</p>
       </div>
@@ -115,7 +125,9 @@
         <div class="mb-2 text-yellow-500 text-lg">★★★★★</div>
         <p class="font-semibold text-gray-800 mb-4">“EcoLens made me rethink the way I shop. It’s like a nutritionist and climate activist in one app.”</p>
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+          <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+            <i class="fa-solid fa-user text-gray-500 text-xl"></i>
+          </div>
           <span class="text-sm text-gray-700">Ava P., Austin, TX</span>
         </div>
       </div>
@@ -123,7 +135,9 @@
         <div class="mb-2 text-yellow-500 text-lg">★★★★★</div>
         <p class="font-semibold text-gray-800 mb-4">“The personalized scores are spot on. I finally found a tool that understands my health goals and my values.”</p>
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+          <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+            <i class="fa-solid fa-user text-gray-500 text-xl"></i>
+          </div>
           <span class="text-sm text-gray-700">Marcus L., Seattle, WA</span>
         </div>
       </div>
